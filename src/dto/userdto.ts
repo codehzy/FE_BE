@@ -39,3 +39,10 @@ export class UserFindByEmail {
   })
   email: string;
 }
+
+export class UserFindOne {
+  @ApiPropertyOptional({
+    description: 'uuid',
+  })
+  uuid: string;
+}
