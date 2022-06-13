@@ -25,6 +25,13 @@ export class User {
 
   @Column('varchar', {
     nullable: false,
+    name: 'salt',
+    comment: '密码盐',
+  })
+  salt: string;
+
+  @Column('varchar', {
+    nullable: false,
     name: 'username',
     comment: '用户名',
   })
