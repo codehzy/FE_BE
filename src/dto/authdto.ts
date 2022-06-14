@@ -1,7 +1,9 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiPropertyOptional, OmitType } from '@nestjs/swagger';
 import { UsersDTO } from './userdto';
 
 export class authDto extends UsersDTO {}
+
+export class registerDTO extends OmitType(UsersDTO, ['salt']) {}
 
 export class loginData {
   @ApiPropertyOptional({

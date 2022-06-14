@@ -44,7 +44,7 @@ export class AuthController {
   @ApiOperation({
     summary: '注册',
   })
-  @ApiBearerAuth()
+  @ApiBearerAuth('jwt')
   @UseGuards(AuthGuard('jwt')) // 使用 'JWT' 进行验证
   async register(@Body() body: authDto) {
     return await this.authService.register(body);

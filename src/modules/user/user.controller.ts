@@ -13,13 +13,8 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
-import { loginData } from 'src/dto/authdto';
-import {
-  registerDTO,
-  UserFindByEmail,
-  UserFindOne,
-  UsersDTO,
-} from 'src/dto/userdto';
+import { loginData, registerDTO } from 'src/dto/authdto';
+import { UserFindByEmail, UserFindOne, UsersDTO } from 'src/dto/userdto';
 import { UserService } from './user.service';
 
 @Controller('user')

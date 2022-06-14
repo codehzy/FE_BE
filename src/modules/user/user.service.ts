@@ -1,10 +1,11 @@
 import { Repository } from 'typeorm';
 import { Inject, Injectable } from '@nestjs/common';
 import { User } from 'src/entity/user/user.entity';
-import { registerDTO, UsersDTO } from 'src/dto/userdto';
+import { UsersDTO } from 'src/dto/userdto';
 import { v4 as uuidv4 } from 'uuid';
 import { CODE } from 'src/code/code';
 import { encryptPassword, makeSalt } from 'src/utils/cryptogram';
+import { registerDTO } from 'src/dto/authdto';
 
 @Injectable()
 export class UserService {
@@ -87,11 +88,13 @@ export class UserService {
    */
   async authRegister(body: registerDTO) {
     const { email, password } = body;
-    const userExist = this.findByEmail(email);
-    if (!userExist) {
+    const userExist = await this.findByEmail(email);
+    console.log(userExist);
+
+    if (userExist) {
       return {
         HttpStatus: CODE.HTTP_CREATED,
-        message: '用户不存在',
+        message: '用户已经存在',
       };
     }
     const uuid = uuidv4();

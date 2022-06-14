@@ -1,4 +1,4 @@
-import { ApiPropertyOptional, OmitType } from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UsersDTO {
   uuid: string;
@@ -8,9 +8,6 @@ export class UsersDTO {
   })
   username: string;
 
-  @ApiPropertyOptional({
-    description: '密码盐',
-  })
   salt: string;
 
   @ApiPropertyOptional({
@@ -37,8 +34,6 @@ export class UsersDTO {
   createAt: Date;
   updateAt: Date;
 }
-
-export class registerDTO extends OmitType(UsersDTO, ['salt']) {}
 
 export class UserFindByEmail {
   @ApiPropertyOptional({

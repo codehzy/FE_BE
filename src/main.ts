@@ -10,6 +10,14 @@ async function bootstrap() {
     .setDescription('一个练手标准项目')
     .setVersion('1.0')
     .addTag('future')
+    .addBasicAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+      },
+      'jwt',
+    )
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
