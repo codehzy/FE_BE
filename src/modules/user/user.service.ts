@@ -1,8 +1,10 @@
 import { Repository } from 'typeorm';
-import { Inject, Injectable, HttpCode } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { User } from 'src/entity/user/user.entity';
-import { UsersDTO } from 'src/dto/userdto';
+import { registerDTO, UsersDTO } from 'src/dto/userdto';
 import { v4 as uuidv4 } from 'uuid';
+import { CODE } from 'src/code/code';
+import { encryptPassword, makeSalt } from 'src/utils/cryptogram';
 
 @Injectable()
 export class UserService {
@@ -10,19 +12,6 @@ export class UserService {
     @Inject('USER_REPOSITORY')
     private userRepository: Repository<User>,
   ) {}
-
-  /**
-   * 注册
-   * @param data 用户注册信息 json
-   * @returns
-   */
-  async register(data: UsersDTO) {
-    const uuid = uuidv4();
-    const reqData = Object.assign({ uuid: uuid }, data);
-
-    const user = await this.userRepository.save(reqData);
-    return user;
-  }
 
   /**
    * 通过邮箱：查找用户
@@ -73,7 +62,7 @@ export class UserService {
   async deleteUser(email: string) {
     await this.userRepository.delete({ email });
     return {
-      HttpStatus: 200,
+      code: CODE.HTTP_OK,
       message: '删除成功',
     };
   }
@@ -85,9 +74,36 @@ export class UserService {
     if (isClearAll) {
       await this.userRepository.clear();
       return {
-        HttpStatus: 200,
+        code: CODE.HTTP_OK,
         message: '清空user表成功',
       };
     }
+  }
+
+  /**
+   * 注册用户
+   * @param body 注册用户体
+   * @returns
+   */
+  async authRegister(body: registerDTO) {
+    const { email, password } = body;
+    const userExist = this.findByEmail(email);
+    if (!userExist) {
+      return {
+        HttpStatus: CODE.HTTP_CREATED,
+        message: '用户不存在',
+      };
+    }
+    const uuid = uuidv4();
+
+    // 加盐加密
+    const salt = makeSalt();
+    const hashPwd = encryptPassword(password, salt);
+    Object.keys(body).forEach((item) => {
+      if (item === 'password') body[item] = hashPwd;
+    });
+    const reqBody = Object.assign({ uuid, salt }, body);
+
+    return this.userRepository.save(reqBody);
   }
 }

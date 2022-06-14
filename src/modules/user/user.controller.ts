@@ -9,43 +9,23 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
-import { UserFindByEmail, UserFindOne, UsersDTO } from 'src/dto/userdto';
+import { loginData } from 'src/dto/authdto';
+import {
+  registerDTO,
+  UserFindByEmail,
+  UserFindOne,
+  UsersDTO,
+} from 'src/dto/userdto';
 import { UserService } from './user.service';
 
 @Controller('user')
 @ApiTags('用户模块')
 export class UserController {
   constructor(private readonly userService: UserService) {}
-
-  /**
-   * 注册
-   * @param data 用户注册信息 json
-   * @returns
-   */
-  @Post('register')
-  @ApiOperation({
-    summary: '注册用户',
-  })
-  // @ApiBody({ description: '用户名', type: UsersDTO })
-  async register(@Body() data: UsersDTO) {
-    const { email } = data;
-    const checkUser = await this.findByEmail(email);
-    if (checkUser) {
-      return {
-        HttpStatus: 201,
-        message: '用户已存在',
-      };
-    }
-
-    const user = await this.userService.register(data);
-    return {
-      statusCode: HttpStatus.OK,
-      message: '用户创建成功',
-      user,
-    };
-  }
 
   /**
    * 查找用户
@@ -58,8 +38,6 @@ export class UserController {
   })
   @ApiQuery({ name: 'email', description: '用户email', type: UserFindByEmail })
   async findByEmail(@Query('email') email: string) {
-    console.log(email);
-
     return await this.userService.findByEmail(email);
   }
 
@@ -131,5 +109,18 @@ export class UserController {
   })
   async clearUser(@Query('isClear') isClear: boolean) {
     return await this.userService.clearUser(isClear);
+  }
+
+  /**
+   * 注册用户
+   * @param body 注册用户体
+   * @returns
+   */
+  @Post('register')
+  @ApiOperation({
+    summary: '注册用户',
+  })
+  async authRegister(@Body() body: registerDTO) {
+    return await this.userService.authRegister(body);
   }
 }

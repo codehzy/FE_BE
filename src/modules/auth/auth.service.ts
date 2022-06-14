@@ -1,67 +1,31 @@
+import { encryptPassword } from 'src/utils/cryptogram';
+import { authDto, loginData } from 'src/dto/authdto';
 import { CODE } from './../../code/code';
 import { UserService } from './../user/user.service';
-import { Inject, Injectable, HttpStatus } from '@nestjs/common';
-import { authDto, loginData } from 'src/dto/authdto';
-import { encryptPassword, makeSalt } from 'src/utils/cryptogram';
-import { User } from 'src/entity/user/user.entity';
-import { Repository } from 'typeorm';
-import { v4 as uuidv4 } from 'uuid';
-import { registerDTO } from 'src/dto/userdto';
+import { Injectable } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { UsersDTO } from 'src/dto/userdto';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private userService: UserService,
-    @Inject('USER_REPOSITORY')
-    private userRepository: Repository<User>,
+    private readonly usersService: UserService,
+    private readonly jwtService: JwtService,
   ) {}
-
-  /**
-   * 注册用户
-   * @param body 注册用户体
-   * @returns
-   */
-  async authRegister(body: registerDTO) {
-    const { email, password } = body;
-    const userExist = this.userService.findByEmail(email);
-    if (!userExist) {
-      return {
-        HttpStatus: 201,
-        message: '用户不存在',
-      };
-    }
-    const uuid = uuidv4();
-
-    // 加盐加密
-    const salt = makeSalt();
-    const hashPwd = encryptPassword(password, salt);
-    Object.keys(body).forEach((item) => {
-      if (item === 'password') body[item] = hashPwd;
-    });
-    const reqBody = Object.assign({ uuid, salt }, body);
-    return this.userRepository.save(reqBody);
-  }
-
-  /**
-   * 用户登录
-   * @param body 登录信息
-   */
-  async login({ email, password }: loginData) {
-    // 根据email获取用户
-    const user = await this.userService.findByEmail(email);
+  // 校验用户信息
+  async validateUser({ email, password }: loginData) {
+    const user = await this.usersService.findByEmail(email);
     if (user) {
-      const { password: pwd, salt } = user;
-      // 加盐加密
-      const hashPwd = encryptPassword(password, salt);
-
-      if (hashPwd === pwd) {
+      const { password: PWD, salt } = user;
+      const hashPassword = encryptPassword(password, salt);
+      if (hashPassword === PWD) {
         return {
-          code: CODE.REP_OK,
+          code: CODE.HTTP_OK,
           user,
         };
       } else {
         return {
-          code: CODE.REP_OK,
+          code: CODE.HTTP_OK,
           message: '用户名或者密码错误',
         };
       }
@@ -71,5 +35,28 @@ export class AuthService {
         message: '用户不存在',
       };
     }
+  }
+
+  async certificate(user: authDto) {
+    const { email, password } = user;
+    const payload = Object.assign({ email, password });
+    try {
+      const token = this.jwtService.sign(payload);
+      return {
+        code: CODE.HTTP_OK,
+        data: {
+          token,
+        },
+      };
+    } catch (error) {
+      return {
+        code: CODE.REP_WARNING,
+        msg: '账号或密码错误',
+      };
+    }
+  }
+
+  async register(body: UsersDTO) {
+    return await this.usersService.authRegister(body);
   }
 }
