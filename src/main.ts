@@ -1,27 +1,16 @@
+import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+import { createSwagger } from './swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const PORT = 3333;
+  createSwagger(app);
 
-  const config = new DocumentBuilder()
-    .setTitle('CRUD')
-    .setDescription('一个练手标准项目')
-    .setVersion('1.0')
-    .addTag('future')
-    .addBasicAuth(
-      {
-        type: 'http',
-        scheme: 'bearer',
-        bearerFormat: 'JWT',
-      },
-      'jwt',
-    )
-    .build();
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
-
-  await app.listen(3333);
+  await app.listen(PORT, () => {
+    Logger.log(`API服务已经启动,服务请访问:http://localhost:${PORT}`);
+    Logger.log(`swagger已经启动,服务请访问:http://localhost:${PORT}/docs`);
+  });
 }
 bootstrap();
