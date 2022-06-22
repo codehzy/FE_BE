@@ -10,6 +10,7 @@ async function bootstrap() {
 
   await app.listen(PORT, () => {
     Logger.log(`API服务已经启动,服务请访问:http://localhost:${PORT}`);
+    Logger.log(`Socket服务已经启动,服务请访问:http://localhost:3002`);
     Logger.log(`swagger已经启动,服务请访问:http://localhost:${PORT}/docs`);
   });
 }
