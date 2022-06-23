@@ -1,4 +1,3 @@
-import { ref } from "vue";
 import useInitSocket from "./useInitSocket";
 
 export default function useConnectSocket() {
