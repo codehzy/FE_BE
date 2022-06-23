@@ -1,9 +1,9 @@
 import { ref } from "vue";
-import initSocket from "./useInitSocket";
+import useInitSocket from "./useInitSocket";
 
 export default function useConnectSocket() {
   // 初始化socket
-  const { socket } = initSocket();
+  const { socket } = useInitSocket();
 
   const inputValue = ref("1");
   const sendList = ref<string[]>([]);

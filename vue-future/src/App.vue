@@ -5,8 +5,6 @@ const { inputValue, sendList, sendMessage } = useConnectSocket();
 </script>
 
 <template>
-  <img alt="Vue logo" src="./assets/logo.png" />
-  <!-- <button @click="handleMedia">handleMedia</button> -->
   <input type="text" v-model="inputValue" />
   <button @click="sendMessage">发送</button>
   <ul v-for="(message, index) in sendList" :key="index">

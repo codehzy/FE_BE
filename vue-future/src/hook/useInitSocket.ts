@@ -1,6 +1,6 @@
 import io from "socket.io-client";
 
-export default function initSocket() {
+export default function useInitSocket() {
   const url = "http://localhost:3002";
   const socket = io(url, {
     transports: ["websocket"],
