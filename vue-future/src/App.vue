@@ -1,9 +1,12 @@
-<script setup lang="ts">
-import ChatUser from "./views/chatUser/chatUser.vue";
-</script>
+<script setup lang="ts"></script>
 
-<template>
-  <ChatUser />
-</template>
+<template><router-view></router-view></template>
 
-<style></style>
+<style lang="scss">
+#app,
+html,
+body {
+  width: 100vw;
+  height: 100vh;
+}
+</style>
