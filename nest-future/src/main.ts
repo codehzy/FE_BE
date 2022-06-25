@@ -5,6 +5,7 @@ import { createSwagger } from './swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.enableCors();
   const PORT = 3333;
   createSwagger(app);
 

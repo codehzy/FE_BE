@@ -1,9 +1,18 @@
 import { authDto, loginData } from './../../dto/authdto';
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { CODE } from 'src/code/code';
 import { AuthGuard } from '@nestjs/passport';
+import { ResultSetHeader } from 'mysql2';
 
 @Controller('auth')
 @ApiTags('用户认证模块')
@@ -29,8 +38,8 @@ export class AuthController {
         return this.authService.certificate(authResult.user);
       case CODE.REP_WARNING:
         return {
-          code: 600,
-          msg: `账号或密码不正确`,
+          code: 201,
+          data: { token: `账号或密码不正确` },
         };
       default:
         return {
@@ -45,7 +54,7 @@ export class AuthController {
     summary: '注册',
   })
   @ApiBearerAuth('jwt')
-  @UseGuards(AuthGuard('jwt')) // 使用 'JWT' 进行验证
+  // @UseGuards(AuthGuard('jwt')) // 使用 'JWT' 进行验证
   async register(@Body() body: authDto) {
     return await this.authService.register(body);
   }

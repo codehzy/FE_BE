@@ -25,7 +25,7 @@ export class AuthService {
       } else {
         return {
           code: CODE.HTTP_OK,
-          message: '用户名或者密码错误',
+          data: { token: '用户名或者密码错误' },
         };
       }
     } else {
